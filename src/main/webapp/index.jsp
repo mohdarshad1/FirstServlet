@@ -1,10 +1,6 @@
 <html>
-<title>First Servlet</title>
 <body>
-	<form action="FirstServlet">
-		FirstName:<input type="text" name="fn"> <br></br> 
-		LastName:<input type="text" name="ln"> <br></br> 
-		<input type="submit" name="Request">
-	</form>
+<h2>To Login click the link</h2>
+<a href="login.html">Login Page</a>
 </body>
 </html>
