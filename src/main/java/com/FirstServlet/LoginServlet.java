@@ -13,10 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(description = "Login Servlet Testing", urlPatterns = { "/LoginServlet" }, initParams = {
-		@WebInitParam(name = "user", value = "Arshad"), @WebInitParam(name = "password", value = "Mohd") })
+		@WebInitParam(name = "user", value = "Arshad"), @WebInitParam(name = "password", value = "Mohd@123") })
 public class LoginServlet extends HttpServlet {
 	
 	private static final String nameRegex ="^[A-Z]{1}[a-zA-Z]{2}[a-zA-Z]*";
+	private static final String passwordRegex="^(?=.*[@#$%^&+=])(?=.*[0-9])(?=.*[A-Z]).{8,}$";
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
@@ -25,9 +26,11 @@ public class LoginServlet extends HttpServlet {
 		String pwd = req.getParameter("pwd");
 		boolean validateUserName = validateFirstName(user);
 		boolean userFirstName = userFirstName(req, res, validateUserName);
+		boolean validatePassword = validatePassword(pwd);
+		boolean userPassword = userPassword(req, res, validatePassword);
 		String userID = getServletConfig().getInitParameter("user");
 		String password = getServletConfig().getInitParameter("password");
-		if (userFirstName == true) {
+		if (userFirstName == true &&  userPassword == true) {
 			if (userID.equals(user) && password.equals(pwd)) {
 				req.setAttribute("user", user);
 				req.getRequestDispatcher("LoginSuccess.jsp").forward(req, res);
@@ -45,7 +48,19 @@ public class LoginServlet extends HttpServlet {
 		if (validateUserName == false) {
 			RequestDispatcher rd = getServletContext().getRequestDispatcher("/login.jsp");
 			PrintWriter out = response.getWriter();
-			out.println("<font>Incorrect Regex Pattern</font>");
+			out.println("<font>Incorrect Name Regex Pattern</font>");
+			rd.include(request, response);
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean userPassword(HttpServletRequest request, HttpServletResponse response, boolean validatePassword)
+			throws IOException, ServletException {
+		if (validatePassword == false) {
+			RequestDispatcher rd = getServletContext().getRequestDispatcher("/login.jsp");
+			PrintWriter out = response.getWriter();
+			out.println("<font>Incorrect Password Regex Pattern</font>");
 			rd.include(request, response);
 			return false;
 		}
@@ -55,6 +70,12 @@ public class LoginServlet extends HttpServlet {
 	public boolean validateFirstName(String userName) {
 		Pattern check = Pattern.compile(nameRegex);
 		boolean value = check.matcher(userName).matches();
+		return value;
+	}
+	
+	public boolean validatePassword(String password) {
+		Pattern check = Pattern.compile(passwordRegex);
+		boolean value = check.matcher(password).matches();
 		return value;
 	}
 }
